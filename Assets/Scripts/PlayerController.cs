@@ -6,10 +6,12 @@ public class PlayerController : MonoBehaviour
     public float speedFactor;
     public float handHoverDst;
 
-    [SceneObjectsOnly] public GameObject hand;
+    [HideInInspector] public float influenceRadius;
+
+    [SceneObjectsOnly] public Transform hand;
+    [SceneObjectsOnly] public ParticleSystem handParticleSystem;
 
     private Camera cam;
-    private Ray handRay = new Ray();
     private RaycastHit handRaycastHit = new RaycastHit();
     private Vector3 handCoords = new Vector3();
 
@@ -20,12 +22,37 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        influenceRadius = 10;
     }
 
     void Update()
     {
         Move();
         MoveHand();
+        UpdateEnergyLoss();
+    }
+
+    private void UpdateEnergyLoss()
+    {
+        var vecToOrigin = Vector3.zero - handCoords;
+        var loosingPower = vecToOrigin.magnitude > influenceRadius;
+
+        if (loosingPower && !handParticleSystem.emission.enabled)
+        {
+            var emissionModule = handParticleSystem.emission;
+            emissionModule.enabled = true;
+        }
+
+        if (!loosingPower && handParticleSystem.emission.enabled)
+        {
+            var emissionModule = handParticleSystem.emission;
+            emissionModule.enabled = false;
+        }
+
+        if (loosingPower)
+        {
+            handParticleSystem.transform.rotation = Quaternion.LookRotation(vecToOrigin);
+        }
     }
 
     private void Move()
@@ -58,6 +85,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        hand.transform.position = handCoords;
+        hand.position = handCoords;
     }
 }
