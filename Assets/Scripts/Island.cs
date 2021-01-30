@@ -4,7 +4,8 @@ using UnityEngine;
 public class Island : MonoBehaviour
 {
     public bool connected;
-
+    public int followers;
+    
     [SceneObjectsOnly] public Light light;
 
     void Start()

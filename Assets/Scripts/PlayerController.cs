@@ -2,22 +2,29 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
+using Image = UnityEngine.UI.Image;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController INSTANCE;
+
     public float handDefaultHeight = 1f;
     public float handHoveringHeight = 0.5f;
     public float moveSpeed = 1f;
     public float dragSpeedBase = 0.5f;
     public float dragSpeedIsland = 0.2f;
 
-    [HideInInspector] public float influenceRadius;
-
     [SceneObjectsOnly] public Transform hand;
     [SceneObjectsOnly] public Transform handSphere;
     [SceneObjectsOnly] public Light handPointLight;
     [SceneObjectsOnly] public ParticleSystem handLightParticleSystem;
     [SceneObjectsOnly] public ParticleSystem handLifeParticleSystem;
+    [SceneObjectsOnly] public Image energyBar;
+
+    [HideInInspector] public int followers;
+    [HideInInspector] public float influenceRadius;
+    [HideInInspector] public float energyMax;
+    [HideInInspector] public float energy;
 
     private Camera cam;
     private RaycastHit handRaycastHit;
@@ -26,40 +33,44 @@ public class PlayerController : MonoBehaviour
     private Vector3 handCoords;
     private Vector3 mouseMove;
 
-    private bool isStarted;
     private bool isClicking;
     private bool isDragging;
+    private bool isMakingLight;
     private Vector3 dragStartCoords;
     private float currentDragSpeed;
     private float currentLightFactor;
+
     private float sphereBaseScale;
     // private float bonusHeight;
 
     private void Awake()
     {
         cam = Camera.main;
+        INSTANCE = this;
     }
 
     void Start()
     {
         sphereBaseScale = handSphere.localScale.x;
-        influenceRadius = 10;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        AddFollowers(429);
+        energy = energyMax;
     }
 
     void Update()
     {
-        isClicking = Input.GetMouseButton((int) MouseButton.LeftMouse);
-        if (!isStarted && isClicking)
+        if (GameManager.INSTANCE.gamePaused || GameManager.INSTANCE.gameOver)
         {
-            isStarted = true;
+            return;
         }
 
+        isClicking = Input.GetMouseButton((int) MouseButton.LeftMouse);
         MoveHand();
         Move();
         UpdateHandLighting();
-        UpdateEnergyLoss();
+        UpdateEnergy();
     }
 
     private void Move()
@@ -124,7 +135,7 @@ public class PlayerController : MonoBehaviour
 
     private void MoveHand()
     {
-        if (!isStarted)
+        if (!GameManager.INSTANCE.isStarted)
         {
             return;
         }
@@ -136,7 +147,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        handCoords += mouseMove * moveSpeed;
+        handCoords += mouseMove * (moveSpeed);
 
         if (!isClicking && !isDragging)
         {
@@ -167,10 +178,10 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateHandLighting()
     {
-        var makingLight = isClicking; // && !isDragging;
+        isMakingLight = isClicking; // && !isDragging;
 
         // increase light level
-        if (makingLight && currentLightFactor < 1)
+        if (isMakingLight && currentLightFactor < 1)
         {
             currentLightFactor += Time.deltaTime * 0.5f;
             if (currentLightFactor > 1)
@@ -180,7 +191,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // decrease light level
-        if (!makingLight && currentLightFactor > 0)
+        if (!isMakingLight && currentLightFactor > 0)
         {
             currentLightFactor -= Time.deltaTime * 0.5f;
             if (currentLightFactor < 0)
@@ -203,10 +214,9 @@ public class PlayerController : MonoBehaviour
         emissionModule.rateOverTime = EasingFunction.EaseInOutCubic(0f, 3, currentLightFactor);
     }
 
-    private void UpdateEnergyLoss()
+    private void UpdateEnergy()
     {
-        var vecToOrigin = Vector3.zero - hand.position;
-        var loosingPower = vecToOrigin.magnitude > influenceRadius;
+        var loosingPower = IsOutOfInfluenceZone();
 
         if (loosingPower && !handLifeParticleSystem.emission.enabled)
         {
@@ -222,7 +232,38 @@ public class PlayerController : MonoBehaviour
 
         if (loosingPower)
         {
+            // loose energy
+            energy -= Time.deltaTime * 0.5f;
+
+            // VFX
+            var vecToOrigin = Vector3.zero - hand.position;
             handLifeParticleSystem.transform.rotation = Quaternion.LookRotation(vecToOrigin);
         }
+        else if (!isMakingLight && energy < energyMax)
+        {
+            // gain energy
+            energy += Time.deltaTime * energyMax / 5;
+            if (energy > energyMax)
+            {
+                energy = energyMax;
+            }
+        }
+
+        energyBar.fillAmount = EasingFunction.EaseInSine(0, 1, energy / energyMax);
+    }
+
+    public bool IsOutOfInfluenceZone()
+    {
+        var vecToOrigin = Vector3.zero - hand.position;
+        var outOfZone = vecToOrigin.magnitude > influenceRadius;
+        return outOfZone;
+    }
+
+    public void AddFollowers(int count)
+    {
+        followers += count;
+        energyMax = followers * 0.01f;
+        influenceRadius = 5 + followers * 0.01f;
+        GameManager.INSTANCE.UpdateInfoPanel();
     }
 }
