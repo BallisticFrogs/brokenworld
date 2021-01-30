@@ -6,11 +6,11 @@ public class Island : MonoBehaviour
     public bool connected;
     public int followers;
     
-    [SceneObjectsOnly] public Light light;
+    [SceneObjectsOnly] public Light localLight;
 
     void Start()
     {
-        light.enabled = connected;
+        localLight.enabled = connected;
     }
 
     // Update is called once per frame

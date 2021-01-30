@@ -141,7 +141,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connected: 0
-  light: {fileID: 9017614317784389145}
+  followers: 0
+  localLight: {fileID: 9017614317784389145}
 --- !u!135 &6747226011495758015
 SphereCollider:
   m_ObjectHideFlags: 0

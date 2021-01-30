@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEditor;
@@ -14,12 +15,15 @@ public class GameManager : MonoBehaviour
     public bool gamePaused;
     public bool gameOver;
 
+    private List<Island> islands = new List<Island>();
 
     [SceneObjectsOnly] public ParticleSystem mergeParticleSystem;
     [SceneObjectsOnly] public TMP_Text fieldFollowers;
+    [SceneObjectsOnly] public TMP_Text fieldFood;
 
     [SceneObjectsOnly] public GameObject tutoPanel;
     [SceneObjectsOnly] public GameObject pausePanel;
+    [SceneObjectsOnly] public GameObject victoryPanel;
     [SceneObjectsOnly] public GameObject gameOverPanel;
     [SceneObjectsOnly] public TMP_Text gameOverPanelText;
 
@@ -33,6 +37,13 @@ public class GameManager : MonoBehaviour
         tutoPanel.SetActive(true);
         pausePanel.SetActive(false);
         gameOverPanel.SetActive(false);
+        victoryPanel.SetActive(false);
+
+        var objs = GameObject.FindGameObjectsWithTag("island");
+        foreach (var obj in objs)
+        {
+            islands.Add(obj.GetComponent<Island>());
+        }
     }
 
     private void Update()
@@ -50,6 +61,11 @@ public class GameManager : MonoBehaviour
         if (PlayerController.INSTANCE.followers <= 0)
         {
             GameOver("All your followers died of hunger...\nand the idea of you with them");
+        }
+
+        if (!islands.Exists(i => !i.connected))
+        {
+            Victory();
         }
 
         if (gameOver)
@@ -80,6 +96,7 @@ public class GameManager : MonoBehaviour
     public void UpdateInfoPanel()
     {
         fieldFollowers.text = PlayerController.INSTANCE.followers + "";
+        fieldFood.text = PlayerController.INSTANCE.food + "";
     }
 
     public void PlayIslandMergeVFX(Vector3 contactPoint)
@@ -109,8 +126,15 @@ public class GameManager : MonoBehaviour
         gameOver = true;
         gameOverPanel.SetActive(true);
         gameOverPanelText.text = text;
+    }
 
-        // TODO
+    public void Victory()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+
+        gameOver = true;
+        victoryPanel.SetActive(true);
     }
 
     public void RestartGame()

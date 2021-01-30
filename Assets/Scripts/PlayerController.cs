@@ -1,8 +1,10 @@
+using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 using Image = UnityEngine.UI.Image;
+using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 1f;
     public float dragSpeedBase = 0.5f;
     public float dragSpeedIsland = 0.2f;
+    public float foodConsumptionInterval = 5f;
 
     [SceneObjectsOnly] public Transform hand;
     [SceneObjectsOnly] public Transform handSphere;
@@ -22,9 +25,12 @@ public class PlayerController : MonoBehaviour
     [SceneObjectsOnly] public Image energyBar;
 
     [HideInInspector] public int followers;
+    [HideInInspector] public int food;
     [HideInInspector] public float influenceRadius;
     [HideInInspector] public float energyMax;
     [HideInInspector] public float energy;
+
+    private float foodConsumptionDelay;
 
     private Camera cam;
     private RaycastHit handRaycastHit;
@@ -56,7 +62,9 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
 
         AddFollowers(429);
+        AddFood(followers * 7);
         energy = energyMax;
+        foodConsumptionDelay = foodConsumptionInterval;
     }
 
     void Update()
@@ -71,6 +79,7 @@ public class PlayerController : MonoBehaviour
         Move();
         UpdateHandLighting();
         UpdateEnergy();
+        UpdateFood();
     }
 
     private void Move()
@@ -252,6 +261,33 @@ public class PlayerController : MonoBehaviour
         energyBar.fillAmount = EasingFunction.EaseInSine(0, 1, energy / energyMax);
     }
 
+    private void UpdateFood()
+    {
+        foodConsumptionDelay -= Time.deltaTime;
+        if (foodConsumptionDelay <= 0)
+        {
+            foodConsumptionDelay = foodConsumptionInterval;
+
+            var consumed = Random.Range((int) (followers * 0.5), (int) (followers * 1.5));
+            if (consumed <= food)
+            {
+                // consume food
+                AddFood(-consumed);
+            }
+            else
+            {
+                // followers die
+                consumed -= food;
+                AddFood(-food);
+
+                var deaths = Math.Min(followers, consumed);
+                AddFollowers(-deaths);
+
+                // TODO SFX on follower death
+            }
+        }
+    }
+
     public bool IsOutOfInfluenceZone()
     {
         var vecToOrigin = Vector3.zero - hand.position;
@@ -264,6 +300,12 @@ public class PlayerController : MonoBehaviour
         followers += count;
         energyMax = followers * 0.01f;
         influenceRadius = 5 + followers * 0.01f;
+        GameManager.INSTANCE.UpdateInfoPanel();
+    }
+
+    public void AddFood(int count)
+    {
+        food += count;
         GameManager.INSTANCE.UpdateInfoPanel();
     }
 }
