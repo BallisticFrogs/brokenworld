@@ -1,14 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class Island : MonoBehaviour
 {
     public bool connected;
 
-    // Start is called before the first frame update
+    [SceneObjectsOnly] public Light light;
+
     void Start()
     {
+        light.enabled = connected;
     }
 
     // Update is called once per frame

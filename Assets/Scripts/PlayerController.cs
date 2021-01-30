@@ -5,8 +5,8 @@ using Cursor = UnityEngine.Cursor;
 
 public class PlayerController : MonoBehaviour
 {
-    public float defaultHeight = 1f;
-    public float handHoverDst = 0.3f;
+    public float handDefaultHeight = 1f;
+    public float handHoveringHeight = 0.5f;
     public float moveSpeed = 1f;
     public float dragSpeedBase = 0.5f;
     public float dragSpeedIsland = 0.2f;
@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private float currentDragSpeed;
     private float currentLightFactor;
     private float sphereBaseScale;
+    // private float bonusHeight;
 
     private void Awake()
     {
@@ -144,7 +145,7 @@ public class PlayerController : MonoBehaviour
             if (hasHit)
             {
                 handCoords = handRaycastHit.point;
-                handCoords.y += handHoverDst;
+                handCoords.y += handHoveringHeight;
 
                 island = handRaycastHit.collider.gameObject.GetComponentInParent<Island>();
             }
@@ -153,7 +154,7 @@ public class PlayerController : MonoBehaviour
                 island = null;
 
                 // find intersection point with the base plane
-                Plane plane = new Plane(Vector3.up, -defaultHeight);
+                Plane plane = new Plane(Vector3.up, -(handDefaultHeight));
                 if (plane.Raycast(ray, out var distance))
                 {
                     handCoords = ray.GetPoint(distance);
@@ -181,7 +182,7 @@ public class PlayerController : MonoBehaviour
         // decrease light level
         if (!makingLight && currentLightFactor > 0)
         {
-            currentLightFactor -= Time.deltaTime * 0.2f;
+            currentLightFactor -= Time.deltaTime * 0.5f;
             if (currentLightFactor < 0)
             {
                 currentLightFactor = 0;
@@ -192,9 +193,10 @@ public class PlayerController : MonoBehaviour
         handPointLight.range = EasingFunction.EaseOutCubic(6, 15, currentLightFactor);
         handPointLight.intensity = EasingFunction.EaseOutCubic(1, 2, currentLightFactor);
 
-        // update sphere size
+        // update sphere height/size
         handSphere.localScale =
             Vector3.one * (sphereBaseScale * EasingFunction.EaseInOutCubic(1f, 1.5f, currentLightFactor));
+        // bonusHeight = EasingFunction.EaseInOutCubic(0f, 1f, currentLightFactor);
 
         // update particle emission rate
         var emissionModule = handLightParticleSystem.emission;
