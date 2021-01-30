@@ -5,6 +5,7 @@ using Cursor = UnityEngine.Cursor;
 
 public class PlayerController : MonoBehaviour
 {
+    public float defaultHeight = 1f;
     public float handHoverDst = 0.3f;
     public float moveSpeed = 1f;
     public float dragSpeedBase = 0.5f;
@@ -13,7 +14,10 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float influenceRadius;
 
     [SceneObjectsOnly] public Transform hand;
-    [SceneObjectsOnly] public ParticleSystem handParticleSystem;
+    [SceneObjectsOnly] public Transform handSphere;
+    [SceneObjectsOnly] public Light handPointLight;
+    [SceneObjectsOnly] public ParticleSystem handLightParticleSystem;
+    [SceneObjectsOnly] public ParticleSystem handLifeParticleSystem;
 
     private Camera cam;
     private RaycastHit handRaycastHit;
@@ -27,6 +31,8 @@ public class PlayerController : MonoBehaviour
     private bool isDragging;
     private Vector3 dragStartCoords;
     private float currentDragSpeed;
+    private float currentLightFactor;
+    private float sphereBaseScale;
 
     private void Awake()
     {
@@ -35,6 +41,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        sphereBaseScale = handSphere.localScale.x;
         influenceRadius = 10;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -50,6 +57,7 @@ public class PlayerController : MonoBehaviour
 
         MoveHand();
         Move();
+        UpdateHandLighting();
         UpdateEnergyLoss();
     }
 
@@ -90,24 +98,26 @@ public class PlayerController : MonoBehaviour
             // move player/camera
             var tr = transform;
             var position = tr.position;
-            position += -mouseMove * currentDragSpeed;
+            var dragDist = (dragStartCoords - handCoords).magnitude;
+            var distFactor = Mathf.Clamp(dragDist * 0.02f, 0, 1);
+            position += -mouseMove * EasingFunction.EaseInOutCubic(currentDragSpeed, 0, distFactor);
             tr.position = position;
-
-            currentDragSpeed *= 0.99f;
         }
 
         if (isDragging && island && !island.connected && mouseMove.sqrMagnitude > 0)
         {
+            var dragDist = (dragStartCoords - handCoords).magnitude;
+            var distFactor = Mathf.Clamp(dragDist * 0.025f, 0, 1);
+            var move = mouseMove * EasingFunction.EaseInOutCirc(currentDragSpeed, 0, distFactor);
+
             // move island
             var tr = island.transform;
             var position = tr.position;
-            position += mouseMove * currentDragSpeed;
+            position += move;
             tr.position = position;
 
             // also move hand
-            hand.position += mouseMove * currentDragSpeed;
-
-            currentDragSpeed *= 0.99f;
+            hand.position += move;
         }
     }
 
@@ -143,7 +153,7 @@ public class PlayerController : MonoBehaviour
                 island = null;
 
                 // find intersection point with the base plane
-                Plane plane = new Plane(Vector3.up, 0);
+                Plane plane = new Plane(Vector3.up, -defaultHeight);
                 if (plane.Raycast(ray, out var distance))
                 {
                     handCoords = ray.GetPoint(distance);
@@ -154,26 +164,63 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void UpdateHandLighting()
+    {
+        var makingLight = isClicking; // && !isDragging;
+
+        // increase light level
+        if (makingLight && currentLightFactor < 1)
+        {
+            currentLightFactor += Time.deltaTime * 0.5f;
+            if (currentLightFactor > 1)
+            {
+                currentLightFactor = 1;
+            }
+        }
+
+        // decrease light level
+        if (!makingLight && currentLightFactor > 0)
+        {
+            currentLightFactor -= Time.deltaTime * 0.2f;
+            if (currentLightFactor < 0)
+            {
+                currentLightFactor = 0;
+            }
+        }
+
+        // update actual light
+        handPointLight.range = EasingFunction.EaseOutCubic(6, 15, currentLightFactor);
+        handPointLight.intensity = EasingFunction.EaseOutCubic(1, 2, currentLightFactor);
+
+        // update sphere size
+        handSphere.localScale =
+            Vector3.one * (sphereBaseScale * EasingFunction.EaseInOutCubic(1f, 1.5f, currentLightFactor));
+
+        // update particle emission rate
+        var emissionModule = handLightParticleSystem.emission;
+        emissionModule.rateOverTime = EasingFunction.EaseInOutCubic(0f, 3, currentLightFactor);
+    }
+
     private void UpdateEnergyLoss()
     {
         var vecToOrigin = Vector3.zero - hand.position;
         var loosingPower = vecToOrigin.magnitude > influenceRadius;
 
-        if (loosingPower && !handParticleSystem.emission.enabled)
+        if (loosingPower && !handLifeParticleSystem.emission.enabled)
         {
-            var emissionModule = handParticleSystem.emission;
+            var emissionModule = handLifeParticleSystem.emission;
             emissionModule.enabled = true;
         }
 
-        if (!loosingPower && handParticleSystem.emission.enabled)
+        if (!loosingPower && handLifeParticleSystem.emission.enabled)
         {
-            var emissionModule = handParticleSystem.emission;
+            var emissionModule = handLifeParticleSystem.emission;
             emissionModule.enabled = false;
         }
 
         if (loosingPower)
         {
-            handParticleSystem.transform.rotation = Quaternion.LookRotation(vecToOrigin);
+            handLifeParticleSystem.transform.rotation = Quaternion.LookRotation(vecToOrigin);
         }
     }
 }
