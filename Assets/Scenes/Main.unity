@@ -821,7 +821,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1219542320}
   serializedVersion: 7
-  lengthInSec: 1
+  lengthInSec: 0.8
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -1641,11 +1641,11 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
-      minMaxState: 2
+      minMaxState: 1
       scalar: 100
       minScalar: 10
       maxCurve:
@@ -1653,7 +1653,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0.018177032
+          value: 0
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -1661,17 +1661,17 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.24579138
-          value: 0.20017204
-          inSlope: 2.3824475
-          outSlope: 2.3824475
+          time: 0.08752771
+          value: 0
+          inSlope: -0.0015553369
+          outSlope: -0.0015553369
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
+          inWeight: 0.09088192
+          outWeight: 1
         - serializedVersion: 3
-          time: 0.43277243
-          value: 0.668848
+          time: 0.1929653
+          value: 0.98156923
           inSlope: 0.0018568244
           outSlope: 0.0018568244
           tangentMode: 0
@@ -1679,22 +1679,49 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.46500367
         - serializedVersion: 3
-          time: 0.6804372
-          value: 0.2867051
-          inSlope: -1.4344764
-          outSlope: -1.4344764
+          time: 0.35667133
+          value: 0
+          inSlope: 0.033471465
+          outSlope: 0.033471465
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
+          outWeight: 0.2915563
+        - serializedVersion: 3
+          time: 0.43114018
+          value: 0
+          inSlope: -0.027115941
+          outSlope: -0.027115941
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 1
+        - serializedVersion: 3
+          time: 0.4844657
+          value: 0.63839877
+          inSlope: -0.012834589
+          outSlope: -0.012834589
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 1
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.99279785
-          value: 0.0130393505
-          inSlope: -0.17407839
-          outSlope: -0.17407839
+          time: 0.57637596
+          value: 0
+          inSlope: 0.042034958
+          outSlope: 0.042034958
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.33333334
+          inWeight: 0.6321065
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.9975891
+          value: 0.0021445751
+          inSlope: 0.017887656
+          outSlope: 0.017887656
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.4478124
           outWeight: 0.20740919
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -1712,14 +1739,14 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.22221448
-          value: 0.33134055
-          inSlope: 2.9571738
-          outSlope: 2.9571738
+          time: 0.31813827
+          value: 0.5386132
+          inSlope: 12.415854
+          outSlope: 12.415854
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
-          outWeight: 0.33333334
+          outWeight: 0.14497694
         - serializedVersion: 3
           time: 0.42294833
           value: 1
@@ -5944,7 +5971,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1683158921}
   m_Layer: 0
-  m_Name: Hand
+  m_Name: PlayerHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5957,14 +5984,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1683158920}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 3.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1349726693}
   - {fileID: 1546006414}
   - {fileID: 1219542321}
-  m_Father: {fileID: 1898750007}
+  m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1898750005
@@ -5996,8 +6023,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 319e94d2508e9dc4abe5f3334d714358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedFactor: 0.1
   handHoverDst: 0.3
+  moveSpeed: 1
+  dragSpeedBase: 0.5
+  dragSpeedIsland: 0.2
   influenceRadius: 0
   hand: {fileID: 1683158921}
   handParticleSystem: {fileID: 1219542323}
@@ -6013,7 +6042,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
-  - {fileID: 1683158921}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6049,7 +6077,7 @@ Transform:
   - {fileID: 1067455818}
   - {fileID: 438337492}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5188903111419712063
 PrefabInstance:
