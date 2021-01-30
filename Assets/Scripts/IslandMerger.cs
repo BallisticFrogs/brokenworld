@@ -15,7 +15,6 @@ public class IslandMerger : MonoBehaviour
     {
         foreach (ContactPoint contact in collision.contacts)
         {
-            // Debug.DrawRay(contact.point, contact.normal, Color.white);
             var other = contact.otherCollider.gameObject;
             var otherMerger = other.GetComponent<IslandMerger>();
             if (island.connected && !otherMerger.island.connected)

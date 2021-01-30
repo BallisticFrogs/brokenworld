@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -14,8 +15,9 @@ public class PlayerController : MonoBehaviour
     public float handHoveringHeight = 0.5f;
     public float moveSpeed = 1f;
     public float dragSpeedBase = 0.5f;
-    public float dragSpeedIsland = 0.2f;
-    public float foodConsumptionInterval = 5f;
+    public float dragSpeedIsland = 0.3f;
+    public float foodConsumptionInterval = 10f;
+    public float fieldReachRadius = 5f;
 
     [SceneObjectsOnly] public Transform hand;
     [SceneObjectsOnly] public Transform handSphere;
@@ -47,7 +49,9 @@ public class PlayerController : MonoBehaviour
     private float currentLightFactor;
 
     private float sphereBaseScale;
-    // private float bonusHeight;
+
+    private Collider[] fieldsInReachResult = new Collider[50];
+    private List<WheatField> growingFields = new List<WheatField>();
 
     private void Awake()
     {
@@ -61,6 +65,9 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        var emissionModule = handLifeParticleSystem.emission;
+        emissionModule.enabled = false;
+
         AddFollowers(429);
         AddFood(followers * 7);
         energy = energyMax;
@@ -69,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.INSTANCE.gamePaused || GameManager.INSTANCE.gameOver)
+        if (!GameManager.INSTANCE.isStarted || GameManager.INSTANCE.gamePaused || GameManager.INSTANCE.gameOver)
         {
             return;
         }
@@ -187,6 +194,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateHandLighting()
     {
+        var wasFullPowerLight = Math.Abs(currentLightFactor - 1) < 0.001f;
         isMakingLight = isClicking; // && !isDragging;
 
         // increase light level
@@ -220,7 +228,35 @@ public class PlayerController : MonoBehaviour
 
         // update particle emission rate
         var emissionModule = handLightParticleSystem.emission;
-        emissionModule.rateOverTime = EasingFunction.EaseInOutCubic(0f, 3, currentLightFactor);
+        emissionModule.rateOverTime = EasingFunction.EaseInOutCubic(0f, 15, currentLightFactor);
+
+
+        var fullPowerLight = Math.Abs(currentLightFactor - 1) < 0.001f;
+        if (isMakingLight && fullPowerLight && !wasFullPowerLight && !IsOutOfInfluenceZone())
+        {
+            var size = Physics.OverlapSphereNonAlloc(hand.position, fieldReachRadius, fieldsInReachResult,
+                Masks.FIELDS, QueryTriggerInteraction.Collide);
+            for (int i = 0; i < size; i++)
+            {
+                var field = fieldsInReachResult[i];
+                var wheatField = field.GetComponent<WheatField>();
+                if (wheatField && wheatField.island.connected)
+                {
+                    growingFields.Add(wheatField);
+                    wheatField.StartGrowing();
+                }
+            }
+        }
+
+        if (wasFullPowerLight && !fullPowerLight)
+        {
+            foreach (var field in growingFields)
+            {
+                field.StopGrowing();
+            }
+
+            growingFields.Clear();
+        }
     }
 
     private void UpdateEnergy()
