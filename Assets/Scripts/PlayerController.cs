@@ -44,6 +44,10 @@ public class PlayerController : MonoBehaviour
     private bool isClicking;
     private bool isDragging;
     private bool isMakingLight;
+    private bool wasClicking;
+    private bool wasDragging;
+    private bool wasMakingLight;
+
     private Vector3 dragStartCoords;
     private float currentDragSpeed;
     private float currentLightFactor;
@@ -76,6 +80,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        wasClicking = isClicking;
+        wasDragging = isDragging;
+        wasMakingLight = isMakingLight;
+
         if (!GameManager.INSTANCE.isStarted || GameManager.INSTANCE.gamePaused || GameManager.INSTANCE.gameOver)
         {
             return;
@@ -87,6 +95,8 @@ public class PlayerController : MonoBehaviour
         UpdateHandLighting();
         UpdateEnergy();
         UpdateFood();
+
+        HandleSFX();
     }
 
     private void Move()
@@ -319,8 +329,43 @@ public class PlayerController : MonoBehaviour
                 var deaths = Math.Min(followers, consumed);
                 AddFollowers(-deaths);
 
-                // TODO SFX on follower death
+                // SFX on follower death
+                SoundManager.INSTANCE.Play(SoundManager.INSTANCE.peopleDying, 1, 0, 0.1f);
+                SoundManager.INSTANCE.Play(SoundManager.INSTANCE.peopleDying, 1, 1f, 1.2f);
             }
+        }
+    }
+
+    private void HandleSFX()
+    {
+        if (isDragging && !island)
+        {
+            SoundManager.INSTANCE.PlaySustained(SoundManager.INSTANCE.dragScreen);
+        }
+
+        if (!isDragging && wasDragging && !island)
+        {
+            SoundManager.INSTANCE.StopSustained(SoundManager.INSTANCE.dragScreen);
+        }
+
+        if (isDragging && island)
+        {
+            SoundManager.INSTANCE.PlaySustained(SoundManager.INSTANCE.dragIsland);
+        }
+
+        if (!isDragging && wasDragging && island)
+        {
+            SoundManager.INSTANCE.StopSustained(SoundManager.INSTANCE.dragIsland);
+        }
+
+        if (isMakingLight && !isDragging)
+        {
+            SoundManager.INSTANCE.PlaySustained(SoundManager.INSTANCE.makeLight);
+        }
+
+        if ((!isMakingLight && wasMakingLight) || (isMakingLight && isDragging))
+        {
+            SoundManager.INSTANCE.StopSustained(SoundManager.INSTANCE.makeLight);
         }
     }
 

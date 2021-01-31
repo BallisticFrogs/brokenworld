@@ -83,8 +83,10 @@ public class WheatField : MonoBehaviour
     {
         ResetField();
 
-        // TODO SFX
+        // SFX
+        SoundManager.INSTANCE.Play(SoundManager.INSTANCE.harvest, 1, 0, 0.7f);
 
+        // add food
         var food = Random.Range(800, 1300);
         PlayerController.INSTANCE.AddFood(food);
     }

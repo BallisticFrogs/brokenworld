@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEditor;
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         INSTANCE = this;
+        DOTween.Init();
     }
 
     private void Start()
@@ -103,6 +105,10 @@ public class GameManager : MonoBehaviour
     {
         mergeParticleSystem.transform.position = contactPoint;
         mergeParticleSystem.Play();
+
+        SoundManager.INSTANCE.Play(SoundManager.INSTANCE.aggregateIsland, 1);
+        SoundManager.INSTANCE.Play(SoundManager.INSTANCE.peopleCheering, 1, 0.8f, 1.5f);
+        SoundManager.INSTANCE.Play(SoundManager.INSTANCE.peopleCheering, 1, 0.5f, 0.7f);
     }
 
     public void QuitGame()
@@ -120,6 +126,8 @@ public class GameManager : MonoBehaviour
 
     public void GameOver(string text)
     {
+        SoundManager.INSTANCE.StopAllSounds();
+
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
 
@@ -130,6 +138,8 @@ public class GameManager : MonoBehaviour
 
     public void Victory()
     {
+        SoundManager.INSTANCE.StopAllSounds();
+
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
 
@@ -150,6 +160,8 @@ public class GameManager : MonoBehaviour
 
     public void PauseGame()
     {
+        SoundManager.INSTANCE.StopAllSounds();
+
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
 
