@@ -523,7 +523,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 72cc9da33efea2148909a31fa3350e99, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8874,7 +8874,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 72cc9da33efea2148909a31fa3350e99, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13962,7 +13962,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 72cc9da33efea2148909a31fa3350e99, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -19184,13 +19184,13 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0.6148985, g: 0.7924215, b: 0.8867924, a: 1}
-  m_Intensity: 1
+  m_Intensity: 2
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -21931,6 +21931,11 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 29c9d3741bdc75e41a486c377d6a035d, type: 2}
+    - target: {fileID: 5188903111889976271, guid: a9a34b8e68c61f544b13544837f8ada8,
+        type: 3}
+      propertyPath: m_SelectedEditorRenderState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5188903111889976272, guid: a9a34b8e68c61f544b13544837f8ada8,
         type: 3}
       propertyPath: m_Mesh
@@ -21949,11 +21954,6 @@ PrefabInstance:
     - target: {fileID: 5188903111889976272, guid: a9a34b8e68c61f544b13544837f8ada8,
         type: 3}
       propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7399521718843590537, guid: a9a34b8e68c61f544b13544837f8ada8,
-        type: 3}
-      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7399521718843590537, guid: a9a34b8e68c61f544b13544837f8ada8,
@@ -22031,6 +22031,11 @@ PrefabInstance:
       propertyPath: m_RenderMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9063411003956783273, guid: a9a34b8e68c61f544b13544837f8ada8,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 72cc9da33efea2148909a31fa3350e99, type: 2}
     m_RemovedComponents:
     - {fileID: 6384921801237874841, guid: a9a34b8e68c61f544b13544837f8ada8, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a9a34b8e68c61f544b13544837f8ada8, type: 3}

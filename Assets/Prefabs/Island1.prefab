@@ -2902,13 +2902,13 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.9932235, b: 0.9198113, a: 1}
-  m_Intensity: 3.41
+  m_Intensity: 4.5
   m_Range: 11.26
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3013,11 +3013,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6471589888368799827, guid: 5f05648b21ff18d49b11c2b96ded34c4,
-        type: 3}
-      propertyPath: playOnAwake
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7977566950234012551, guid: 5f05648b21ff18d49b11c2b96ded34c4,
         type: 3}
