@@ -50,7 +50,7 @@ public class TutoManager : MonoBehaviour
     {
         var finalTip = msgFindIslands.GetComponentInChildren<TMP_Text>();
         var count = GameManager.INSTANCE.islands.Count(i => !i.connected);
-        finalTip.text = $"Find the <color=#457CD3>{count}</color> remaining islands to win.";
+        finalTip.text = $"Find the <color=#457CD3>{count - 1}</color> remaining islands to win.";
 
         StartNextStep();
     }
