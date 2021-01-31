@@ -348,18 +348,14 @@ public class PlayerController : MonoBehaviour
             SoundManager.INSTANCE.PlaySustained(SoundManager.INSTANCE.dragScreen);
         }
 
-        if (!isDragging && wasDragging && (!island || island.connected))
-        {
-            SoundManager.INSTANCE.StopSustained(SoundManager.INSTANCE.dragScreen);
-        }
-
         if (isDragging && island && !island.connected)
         {
             SoundManager.INSTANCE.PlaySustained(SoundManager.INSTANCE.dragIsland);
         }
 
-        if (!isDragging && wasDragging && island && !island.connected)
+        if (!isDragging && wasDragging)
         {
+            SoundManager.INSTANCE.StopSustained(SoundManager.INSTANCE.dragScreen);
             SoundManager.INSTANCE.StopSustained(SoundManager.INSTANCE.dragIsland);
         }
 

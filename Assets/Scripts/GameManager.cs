@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public bool gamePaused;
     public bool gameOver;
 
-    private List<Island> islands = new List<Island>();
+    [HideInInspector] public List<Island> islands = new List<Island>();
 
     [SceneObjectsOnly] public ParticleSystem mergeParticleSystem;
     [SceneObjectsOnly] public TMP_Text fieldFollowers;
