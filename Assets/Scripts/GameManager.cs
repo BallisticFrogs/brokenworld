@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour
     [SceneObjectsOnly] public TMP_Text fieldFollowers;
     [SceneObjectsOnly] public TMP_Text fieldFood;
 
-    [SceneObjectsOnly] public GameObject tutoPanel;
     [SceneObjectsOnly] public GameObject pausePanel;
     [SceneObjectsOnly] public GameObject victoryPanel;
     [SceneObjectsOnly] public GameObject gameOverPanel;
@@ -36,7 +35,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        tutoPanel.SetActive(true);
         pausePanel.SetActive(false);
         gameOverPanel.SetActive(false);
         victoryPanel.SetActive(false);
@@ -77,7 +75,6 @@ public class GameManager : MonoBehaviour
 
         if (!isStarted && Input.GetMouseButton((int) MouseButton.LeftMouse))
         {
-            tutoPanel.SetActive(false);
             isStarted = true;
         }
 
@@ -101,7 +98,7 @@ public class GameManager : MonoBehaviour
         fieldFood.text = PlayerController.INSTANCE.food + "";
     }
 
-    public void PlayIslandMergeVFX(Vector3 contactPoint)
+    public void OnIslandMerge(Vector3 contactPoint)
     {
         mergeParticleSystem.transform.position = contactPoint;
         mergeParticleSystem.Play();
@@ -109,6 +106,8 @@ public class GameManager : MonoBehaviour
         SoundManager.INSTANCE.Play(SoundManager.INSTANCE.aggregateIsland, 1);
         SoundManager.INSTANCE.Play(SoundManager.INSTANCE.peopleCheering, 1, 0.8f, 1.5f);
         SoundManager.INSTANCE.Play(SoundManager.INSTANCE.peopleCheering, 1, 0.5f, 0.7f);
+        
+        TutoManager.INSTANCE.islandsConnected++;
     }
 
     public void QuitGame()

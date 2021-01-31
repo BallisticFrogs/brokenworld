@@ -89,5 +89,7 @@ public class WheatField : MonoBehaviour
         // add food
         var food = Random.Range(800, 1300);
         PlayerController.INSTANCE.AddFood(food);
+
+        TutoManager.INSTANCE.harvests++;
     }
 }

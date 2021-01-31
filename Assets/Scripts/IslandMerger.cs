@@ -21,7 +21,7 @@ public class IslandMerger : MonoBehaviour
             {
                 otherMerger.island.connected = true;
                 otherMerger.island.localLight.enabled = true;
-                GameManager.INSTANCE.PlayIslandMergeVFX(contact.point);
+                GameManager.INSTANCE.OnIslandMerge(contact.point);
                 PlayerController.INSTANCE.AddFollowers(otherMerger.island.followers);
 
                 // TODO SFX

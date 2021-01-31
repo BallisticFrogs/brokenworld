@@ -138,8 +138,11 @@ public class PlayerController : MonoBehaviour
             var position = tr.position;
             var dragDist = (dragStartCoords - handCoords).magnitude;
             var distFactor = Mathf.Clamp(dragDist * 0.02f, 0, 1);
-            position += -mouseMove * EasingFunction.EaseInOutCubic(currentDragSpeed, 0, distFactor);
+            var move = -mouseMove * EasingFunction.EaseInOutCubic(currentDragSpeed, 0, distFactor);
+            position += move;
             tr.position = position;
+
+            TutoManager.INSTANCE.dstMoved += move.magnitude;
         }
 
         if (isDragging && island && !island.connected && mouseMove.sqrMagnitude > 0)
@@ -156,6 +159,8 @@ public class PlayerController : MonoBehaviour
 
             // also move hand
             hand.position += move;
+
+            TutoManager.INSTANCE.islandDstMoved += move.magnitude;
         }
     }
 
